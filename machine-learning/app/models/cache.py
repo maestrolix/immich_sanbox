@@ -38,6 +38,11 @@ class ModelCache:
     async def get(
         self, model_name: str, model_type: ModelType, model_task: ModelTask, **model_kwargs: Any
     ) -> InferenceModel:
+        """
+        Блокирует работу с кешем при помощи составного ключа пока не закончится работа функции.
+        Далее смотрит есть ли уже модель в кеше, если нету,
+        то инициализируем с нуля через 'Special type construct to mark class variables.'
+        """
         key = f"{model_name}{model_type}{model_task}"
 
         async with OptimisticLock(self.cache, key) as lock:

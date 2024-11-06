@@ -43,10 +43,15 @@ class InferenceModel(ABC):
             self._download()
 
     def load(self) -> None:
+        """
+        Выполняем проверки, скачиваем модель из репозитория,
+        запускаем и записываем сессию
+        """
         if self.loaded:
             return
         self.load_attempts += 1
 
+        # Скачиваем модель из репозитория
         self.download()
         attempt = f"Attempt #{self.load_attempts} to load" if self.load_attempts > 1 else "Loading"
         log.info(f"{attempt} {self.model_type.replace('-', ' ')} model '{self.model_name}' to memory")
@@ -54,6 +59,9 @@ class InferenceModel(ABC):
         self.loaded = True
 
     def predict(self, *inputs: Any, **model_kwargs: Any) -> Any:
+        """
+        Главная функция которая нас интересует, остальное всё мишура
+        """
         self.load()
         if model_kwargs:
             self.configure(**model_kwargs)
@@ -67,6 +75,7 @@ class InferenceModel(ABC):
 
     def _download(self) -> None:
         ignore_patterns = [] if self.model_format == ModelFormat.ARMNN else ["*.armnn"]
+        # Скачиваем модель через snapshot_download
         snapshot_download(
             f"immich-app/{clean_name(self.model_name)}",
             cache_dir=self.cache_dir,

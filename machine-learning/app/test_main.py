@@ -507,10 +507,12 @@ class TestFaceRecognition:
         for face in faces:
             assert isinstance(face.get("boundingBox"), dict)
             assert set(face["boundingBox"]) == {"x1", "y1", "x2", "y2"}
-            assert all(isinstance(val, np.float32) for val in face["boundingBox"].values())
+            # TODO: Change isinstance on ==
+            assert all((type(val) == np.float32) for val in face["boundingBox"].values())
             assert isinstance(face.get("embedding"), np.ndarray)
             assert face["embedding"].shape[0] == 512
-            assert isinstance(face.get("score", None), np.float32)
+            # TODO: Change isinstance on ==
+            assert type(face.get("score", None)) == np.float32
 
         rec_model.get_feat.assert_called_once()
         call_args = rec_model.get_feat.call_args_list[0].args

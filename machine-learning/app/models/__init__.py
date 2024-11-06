@@ -33,6 +33,10 @@ def get_model_class(model_name: str, model_type: ModelType, model_task: ModelTas
 
 
 def from_model_type(model_name: str, model_type: ModelType, model_task: ModelTask, **kwargs: Any) -> InferenceModel:
+    """
+    Предоставляет класс модели для дальнейшей работы,
+    а также инициализирует её (используется в случае, если модель не найдена в кеше)
+    """
     return get_model_class(model_name, model_type, model_task)(model_name, **kwargs)
 
 

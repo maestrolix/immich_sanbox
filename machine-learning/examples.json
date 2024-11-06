@@ -1,0 +1,41 @@
+{
+  "Get text embedding from CLIP": {
+    "clip": {
+      "textual": {
+        "modelName": "nllb-clip-base-siglip__v1",
+        "options": {}
+      }
+    }
+  },
+
+  "Get image embedding from CLIP": {
+    "clip": {
+      "visual": {
+        "modelName": "nllb-clip-base-siglip__v1",
+        "options": {}
+      }
+    }
+  },
+
+  "Detected faces": {
+    "facial-recognition": {
+      "detection": {
+        "modelName": "antelopev2",
+        "options": {}
+      }
+    }
+  },
+
+  "Get image embedding from face recognition": {
+    "facial-recognition": {
+      "detection": {
+        "modelName": "antelopev2",
+        "options": {}
+      },
+      "recognition": {
+        "modelName": "antelopev2",
+        "options": {}
+      }
+    }
+  }
+}

@@ -141,7 +141,12 @@ async def predict(
     image: bytes | None = File(default=None),
     text: str | None = Form(default=None),
 ) -> Any:
-    if image is not None:
+    print("\nWORK\n")
+    """
+    Основной запрос который принимает изображение или текст в зависимости от задач,
+    самм задачи описываются посредством енамов в InferenceEntries
+    """
+    if (image is not None) and (image != b''):
         inputs: Image | str = await run(lambda: decode_pil(image))
     elif text is not None:
         inputs = text
@@ -152,6 +157,9 @@ async def predict(
 
 
 async def run_inference(payload: Image | str, entries: InferenceEntries) -> InferenceResponse:
+    """
+    Выполнение поставленных в запросе задач
+    """
     outputs: dict[ModelIdentity, Any] = {}
     response: InferenceResponse = {}
 
@@ -159,11 +167,13 @@ async def run_inference(payload: Image | str, entries: InferenceEntries) -> Infe
         model = await model_cache.get(entry["name"], entry["type"], entry["task"], ttl=settings.model_ttl)
         inputs = [payload]
         for dep in model.depends:
+            print(dep)
             try:
                 inputs.append(outputs[dep])
             except KeyError:
                 message = f"Task {entry['task']} of type {entry['type']} depends on output of {dep}"
                 raise HTTPException(400, message)
+        # Получаем модель с активной сессией
         model = await load(model)
         output = await run(model.predict, *inputs, **entry["options"])
         outputs[model.identity] = output
@@ -180,6 +190,9 @@ async def run_inference(payload: Image | str, entries: InferenceEntries) -> Infe
 
 
 async def run(func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
+    """
+    Используется для запуска задач в многопоточном режиме (можно не обращать внимание)
+    """
     if thread_pool is None:
         return func(*args, **kwargs)
     partial_func = partial(func, *args, **kwargs)
